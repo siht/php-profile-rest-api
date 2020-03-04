@@ -1,7 +1,8 @@
 <?php
 function getProfiles(){
     require_once "bootstrap.php";
-
+    header('Content-Type: application/json');
+    http_response_code(200);
     $profileRepository = $entityManager->getRepository('Profile');
     $profiles = $profileRepository->findAll();
     $array_profiles = array();
@@ -16,6 +17,7 @@ function getProfiles(){
 }
 
 function insertProfile(){
+    header('Content-Type: application/json');
     $entityBody = json_decode(stream_get_contents(detectRequestBody()), true);
     $title = $entityBody['title'];
     $image = $entityBody['image'];
@@ -29,9 +31,11 @@ function insertProfile(){
         $entityManager->flush();
         $dict_profile = objectProfileToDict($profile);
         $json_profile = dictToPrettyJSON($dict_profile);
+        http_response_code(200);
         return $json_profile; // on success send the new object
     }
     // error messages if no title or image
+    http_response_code(400);
     $nor_title_nor_image = !$request_has_title_and_image;
     $error_message = "";
     if($nor_title_nor_image){
