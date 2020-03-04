@@ -6,7 +6,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Entity
  * @ORM\Table(name="profiles")
  */
-class Profiles
+class Profile
 {
     /** 
      * @ORM\Id
@@ -42,21 +42,26 @@ class Profiles
 
     public function getImage()
     {
-        return $this->$image;
+        return $this->image;
     }
 
     public function setImage($image)
     {
-        $this->$image = $image;
+        $this->image = $image;
     }
 
     public function getTitle()
     {
-        return $this->$title;
+        return $this->title;
     }
 
     public function setTitle($title)
     {
-        $this->$title = $title;
+        $this->title = $title;
+    }
+
+    public function getDate()
+    {
+        return $this->reg_date;
     }
 }
