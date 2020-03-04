@@ -23,3 +23,14 @@ function getProfiles(){
     );
     return $json_profiles;
 }
+
+function insertProfile(){
+    require_once "bootstrap.php";
+
+    $profile = new Profile();
+    $profile->setTitle("titulo de prueba");
+    $profile->setImage("https://vanguardia.com.mx/sites/default/files/styles/paragraph_image_large_desktop_1x/public/homero-filosofo-5.jpg");
+
+    $entityManager->persist($profile);
+    $entityManager->flush();
+}

@@ -9,5 +9,9 @@ SimpleRouter::get('/', function(){
     return getProfiles();
 });
 
+SimpleRouter::post('/', function(){
+    return insertProfile();
+});
+
 // Start the routing
 SimpleRouter::start();
