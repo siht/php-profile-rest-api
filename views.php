@@ -20,45 +20,28 @@ function insertProfile(){
     header('Content-Type: application/json');
     $entityBody = json_decode(stream_get_contents(detectRequestBody()), true);
     $name =  $entityBody['nombre'];
-    $title = $entityBody['titulo'];
-    $request_has_title_and_image = $title && $image;
-    if($request_has_title_and_image){ // both are required
-        require_once "bootstrap.php";
-        $profile = new Profile();
-        $profile->setName($name);
-        $profile->setTitulo($titulo);
-        $entityManager->persist($profile);
-        $entityManager->flush();
-        $dict_profile = objectProfileToDict($profile);
-        $json_profile = dictToPrettyJSON($dict_profile);
-        http_response_code(200);
-        return $json_profile; // on success send the new object
-    }
-    // error messages if no title or image
-    http_response_code(400);
-    $nor_title_nor_image = !$request_has_title_and_image;
-    $error_message = "";
-    if($nor_title_nor_image){
-        $error_message = "title and image are required";
-    }
-    else if(!$image){
-        $error_message = "image is required";
-    }
-    else if(!$title){
-        $error_message = "title is required";
-    }
-    $dict_error = array("error" => $error_message);
-    $json_error = dictToPrettyJSON($dict_error);
-    return $json_error;
+    $title =  $entityBody['titulo'];
+    $image = $entityBody['imagen'];
+    require_once "bootstrap.php";
+    $profile = new Profile();
+    $profile->setName($name);
+    $profile->setTitulo($titulo);
+    $profile->setImage($image);
+    $entityManager->persist($profile);
+    $entityManager->flush();
+    $dict_profile = objectProfileToDict($profile);
+    $json_profile = dictToPrettyJSON($dict_profile);
+    http_response_code(200);
+    return $json_profile;
 }
 
 function objectProfileToDict($profile){
-    return $dict_profile = array(
+    return [
         'id' => $profile->getId(),
         'imagen' => $profile->getImage(),
         'titulo' => $profile->getTitle(),
         'fecha' => $profile->getDate()
-    );
+    ];
 }
 
 function dictToPrettyJSON($dict){
