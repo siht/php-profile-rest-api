@@ -16,12 +16,18 @@ class Profile
     protected $id;
 
     /** 
-     * @ORM\Column(type="string") 
+     * @ORM\Column(type="string", options={"default": "N/A"}) 
+     */
+    protected $name;
+
+
+    /** 
+     * @ORM\Column(type="string", options={"default": "N/A"}) 
      */
     protected $image;
 
     /** 
-     * @ORM\Column(type="string") 
+     * @ORM\Column(type="string", options={"default": "N/A"}) 
      */
     protected $title;
 
@@ -38,6 +44,16 @@ class Profile
     public function getId()
     {
         return $this->id;
+    }
+
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    public function setName($name)
+    {
+        $this->name = $name;
     }
 
     public function getImage()
