@@ -19,14 +19,14 @@ function getProfiles(){
 function insertProfile(){
     header('Content-Type: application/json');
     $entityBody = json_decode(stream_get_contents(detectRequestBody()), true);
-    $title = $entityBody['title'];
-    $image = $entityBody['image'];
+    $name =  $entityBody['nombre'];
+    $title = $entityBody['titulo'];
     $request_has_title_and_image = $title && $image;
     if($request_has_title_and_image){ // both are required
         require_once "bootstrap.php";
         $profile = new Profile();
-        $profile->setTitle($title);
-        $profile->setImage($image);
+        $profile->setName($name);
+        $profile->setTitulo($titulo);
         $entityManager->persist($profile);
         $entityManager->flush();
         $dict_profile = objectProfileToDict($profile);
@@ -42,10 +42,10 @@ function insertProfile(){
         $error_message = "title and image are required";
     }
     else if(!$image){
-        $error_message = "image are required";
+        $error_message = "image is required";
     }
     else if(!$title){
-        $error_message = "title are required";
+        $error_message = "title is required";
     }
     $dict_error = array("error" => $error_message);
     $json_error = dictToPrettyJSON($dict_error);
@@ -55,9 +55,9 @@ function insertProfile(){
 function objectProfileToDict($profile){
     return $dict_profile = array(
         'id' => $profile->getId(),
-        'image' => $profile->getImage(),
-        'title' => $profile->getTitle(),
-        'date' => $profile->getDate()
+        'imagen' => $profile->getImage(),
+        'titulo' => $profile->getTitle(),
+        'fecha' => $profile->getDate()
     );
 }
 
