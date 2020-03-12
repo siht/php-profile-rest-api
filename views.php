@@ -16,49 +16,66 @@ function getProfiles(){
     return $json_profiles;
 }
 
+function optionsInsertProfile(){
+    header('Access-Control-Allow-Origin: *');
+    header("Access-Control-Allow-Headers: X-API-KEY, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Request-Method");
+    header("Access-Control-Allow-Methods: OPTIONS, POST");
+    header("Content-Type: application/json");
+    header("Content-Length: 0");
+    http_response_code(200);
+    return "";
+}
+
 function insertProfile(){
+    header('Access-Control-Allow-Origin: *');
+    header("Access-Control-Allow-Headers: X-API-KEY, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Request-Method");
+    header("Access-Control-Allow-Methods: POST");
     header('Content-Type: application/json');
     $entityBody = json_decode(stream_get_contents(detectRequestBody()), true);
-    $title = $entityBody['title'];
-    $image = $entityBody['image'];
-    $request_has_title_and_image = $title && $image;
-    if($request_has_title_and_image){ // both are required
-        require_once "bootstrap.php";
-        $profile = new Profile();
-        $profile->setTitle($title);
-        $profile->setImage($image);
-        $entityManager->persist($profile);
-        $entityManager->flush();
-        $dict_profile = objectProfileToDict($profile);
-        $json_profile = dictToPrettyJSON($dict_profile);
-        http_response_code(200);
-        return $json_profile; // on success send the new object
-    }
-    // error messages if no title or image
-    http_response_code(400);
-    $nor_title_nor_image = !$request_has_title_and_image;
-    $error_message = "";
-    if($nor_title_nor_image){
-        $error_message = "title and image are required";
-    }
-    else if(!$image){
-        $error_message = "image are required";
-    }
-    else if(!$title){
-        $error_message = "title are required";
-    }
-    $dict_error = array("error" => $error_message);
-    $json_error = dictToPrettyJSON($dict_error);
-    return $json_error;
+    $name =  $entityBody['nombre'];
+    $title =  $entityBody['titulo'];
+    $image = $entityBody['image'] || "";
+    require_once "bootstrap.php";
+    $profile = new Profile();
+    $profile->setName($name);
+    $profile->setTitle($title);
+    $profile->setImage($image);
+    $entityManager->persist($profile);
+    $entityManager->flush();
+    $dict_profile = objectProfileToDict($profile);
+    $json_profile = dictToPrettyJSON($dict_profile);
+    http_response_code(200);
+    return $json_profile;
+}
+
+function uploadImage($profileId){
+    require_once 'vendor/autoload.php';
+    header("Access-Control-Allow-Origin: *");
+    header("Access-Control-Allow-Headers: X-API-KEY, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Request-Method");
+    header("Access-Control-Allow-Methods: POST");
+    header('Content-Type: application/json');
+    $image = file_get_contents($_FILES["image"]["tmp_name"]);
+    $imgur_response = json_decode(sendImageToImgur($image), true);
+
+    require_once "bootstrap.php";
+    $profileRepository = $entityManager->getRepository('Profile');
+    $profile = $profileRepository->find($profileId);
+    $profile->setImage($imgur_response["data"]["link"]);
+    $entityManager->persist($profile);
+    $entityManager->flush();
+    $dict_profile = objectProfileToDict($profile);
+    $json_profile = dictToPrettyJSON($dict_profile);
+    http_response_code(200);
+    return $json_profile;
 }
 
 function objectProfileToDict($profile){
-    return $dict_profile = array(
-        'id' => $profile->getId(),
-        'image' => $profile->getImage(),
-        'title' => $profile->getTitle(),
-        'date' => $profile->getDate()
-    );
+    return [
+        '_id' => $profile->getId(),
+        'imagen' => $profile->getImage(),
+        'titulo' => $profile->getTitle(),
+        'fecha' => $profile->getDate()
+    ];
 }
 
 function dictToPrettyJSON($dict){
@@ -71,4 +88,24 @@ function detectRequestBody() {
     stream_copy_to_stream($rawInput, $tempStream);
     rewind($tempStream);
     return $tempStream;
+}
+
+function sendImageToImgur($image){
+    $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
+    $dotenv->load();
+
+    require_once "vendor/autoload.php";
+    $imgur_client_id = getenv('IMGUR_CLIENT_ID');
+    $imgur_url = getenv('IMGUR_URL');
+    $image_in_base64 = base64_encode($image);
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_URL, $imgur_url);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, ["Authorization: Client-ID $imgur_client_id"]);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, ["image" => $image_in_base64]);
+    $result = curl_exec($ch);
+    curl_close($ch);
+    return $result;
 }
