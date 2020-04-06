@@ -28,7 +28,7 @@ if you dont want set these variables modify the .env file and put these variable
 
 ## how to install
 
-Once requirements are satisfied and environment vars was setted, place this project in apache and configure to point public folder.
+Once requirements are satisfied and environment vars was setted, place this project in apache pointing project root.
 
 Setup your database with an user and a database attached to your user (recommended).
 
