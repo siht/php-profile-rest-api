@@ -15,6 +15,7 @@ This is a basic rest api, that insert profiles with title and image
 - "CONNECTION_STRING"
 - "IMGUR_CLIENT_ID"
 - "IMGUR_URL"
+- "ACCEPTED_SITES"
 
 these variable goes in this form
 
@@ -22,6 +23,7 @@ these variable goes in this form
 CONNECTION_STRING=mysql://your_user:password@host/database
 IMGUR_CLIENT_ID=an_id
 IMGUR_URL=https://api.imgur.com/3/image
+ACCEPTED_SITES=*
 ```
 
 if you dont want set these variables modify the .env file and put these variable there.

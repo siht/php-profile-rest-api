@@ -1,12 +1,13 @@
 <?php
 function getProfiles(){
     require_once "bootstrap.php";
-    header("Access-Control-Allow-Origin: *");
+    $accepted_sites = getenv("ACCEPTED_SITES");
+    header("Access-Control-Allow-Origin: $accepted_sites");
     header("Access-Control-Allow-Headers: X-API-KEY, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Request-Method");
     header("Access-Control-Allow-Methods: GET");
-    header('Content-Type: application/json');
+    header("Content-Type: application/json");
     http_response_code(200);
-    $profileRepository = $entityManager->getRepository('Profile');
+    $profileRepository = $entityManager->getRepository("Profile");
     $profiles = $profileRepository->findAll();
     $array_profiles = array();
 
@@ -20,7 +21,10 @@ function getProfiles(){
 }
 
 function optionsInsertProfile(){
-    header('Access-Control-Allow-Origin: *');
+    $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
+    $dotenv->load();
+    $accepted_sites = getenv("ACCEPTED_SITES");
+    header("Access-Control-Allow-Origin: $accepted_sites");
     header("Access-Control-Allow-Headers: X-API-KEY, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Request-Method");
     header("Access-Control-Allow-Methods: OPTIONS, POST");
     header("Content-Type: application/json");
@@ -30,15 +34,16 @@ function optionsInsertProfile(){
 }
 
 function insertProfile(){
-    header('Access-Control-Allow-Origin: *');
+    require_once "bootstrap.php";
+    $accepted_sites = getenv("ACCEPTED_SITES");
+    header("Access-Control-Allow-Origin: $accepted_sites");
     header("Access-Control-Allow-Headers: X-API-KEY, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Request-Method");
     header("Access-Control-Allow-Methods: POST");
-    header('Content-Type: application/json');
+    header("Content-Type: application/json");
     $entityBody = json_decode(stream_get_contents(detectRequestBody()), true);
-    $name =  $entityBody['nombre'];
-    $title =  $entityBody['titulo'];
-    $image = $entityBody['image'] || "";
-    require_once "bootstrap.php";
+    $name =  $entityBody["nombre"];
+    $title =  $entityBody["titulo"];
+    $image = $entityBody["image"] || "";
     $profile = new Profile();
     $profile->setName($name);
     $profile->setTitle($title);
@@ -52,16 +57,17 @@ function insertProfile(){
 }
 
 function uploadImage($profileId){
-    require_once 'vendor/autoload.php';
-    header("Access-Control-Allow-Origin: *");
+    require_once "vendor/autoload.php";
+    $accepted_sites = getenv("ACCEPTED_SITES");
+    header("Access-Control-Allow-Origin: $accepted_sites");
     header("Access-Control-Allow-Headers: X-API-KEY, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Request-Method");
     header("Access-Control-Allow-Methods: POST");
-    header('Content-Type: application/json');
+    header("Content-Type: application/json");
     $image = file_get_contents($_FILES["image"]["tmp_name"]);
     $imgur_response = json_decode(sendImageToImgur($image), true);
 
     require_once "bootstrap.php";
-    $profileRepository = $entityManager->getRepository('Profile');
+    $profileRepository = $entityManager->getRepository("Profile");
     $profile = $profileRepository->find($profileId);
     $profile->setImage($imgur_response["data"]["link"]);
     $entityManager->persist($profile);
@@ -74,10 +80,10 @@ function uploadImage($profileId){
 
 function objectProfileToDict($profile){
     return [
-        '_id' => $profile->getId(),
-        'imagen' => $profile->getImage(),
-        'titulo' => $profile->getTitle(),
-        'fecha' => $profile->getDate()
+        "_id" => $profile->getId(),
+        "imagen" => $profile->getImage(),
+        "titulo" => $profile->getTitle(),
+        "fecha" => $profile->getDate()
     ];
 }
 
@@ -86,8 +92,8 @@ function dictToPrettyJSON($dict){
 }
 
 function detectRequestBody() {
-    $rawInput = fopen('php://input', 'r');
-    $tempStream = fopen('php://temp', 'r+');
+    $rawInput = fopen("php://input", "r");
+    $tempStream = fopen("php://temp", "r+");
     stream_copy_to_stream($rawInput, $tempStream);
     rewind($tempStream);
     return $tempStream;
@@ -98,8 +104,8 @@ function sendImageToImgur($image){
     $dotenv->load();
 
     require_once "vendor/autoload.php";
-    $imgur_client_id = getenv('IMGUR_CLIENT_ID');
-    $imgur_url = getenv('IMGUR_URL');
+    $imgur_client_id = getenv("IMGUR_CLIENT_ID");
+    $imgur_url = getenv("IMGUR_URL");
     $image_in_base64 = base64_encode($image);
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
