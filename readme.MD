@@ -1,12 +1,12 @@
 # BASIC REST API
 
-This is a basic rest api, that insert profiles with title and image
+This is a basic rest api, that insert profiles with title and image see his functionality in [this page](https://peaceful-waters-33097.herokuapp.com/profiles) because this is a hobist project in heroku maybe needs a refresh in some configurations, ask for me to refresh conf and you can see the results.
 
 ## requirements
 
 - php:7.4.3
 - apache with mod rewrite enable
-- mariadb:5.5.60
+- mariadb:5.5.60 (I tested with this locally, but you can use other. See [doctrine documentation](https://www.doctrine-project.org/projects/doctrine-dbal/en/2.10/reference/configuration.html#connecting-using-a-url))
 - curl
 - composer
 
