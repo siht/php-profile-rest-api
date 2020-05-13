@@ -66,6 +66,12 @@ try with curl
 curl -H "Content-Type: application/json" -X POST --data '{"titulo": "titulo", "image": "imagen", "nombre": "nombre"}' http://your-host:your-port/profile/new
 ```
 
+for test image upload
+
+```sh
+curl -X POST -H "Content-Type: multipart/form-data" -F "image=@/path/to/your/image.jpg" http://your-host:your-port/profile/{object_id}/upload-image
+```
+
 ## TODO
 
 - cover when exists a database
